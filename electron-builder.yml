@@ -1,0 +1,25 @@
+appId: com.clawkanban.app
+productName: Claw Kanban
+directories:
+  buildResources: resources
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.*'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+linux:
+  target:
+    - AppImage
+    - deb
+  maintainer: clawkanban
+  category: Utility
+mac:
+  target:
+    - dmg
+    - zip
+  entitlementsInherit: build/entitlements.mac.plist
+win:
+  target:
+    - nsis
