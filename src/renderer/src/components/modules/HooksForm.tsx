@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { hooksSchema } from '@/lib/schemas'
 import { FormField, TextInput, SaveButton } from '../common/FormField'
 import { Plus, Trash2 } from 'lucide-react'
 import type { HooksConfig } from '@/types/config'
@@ -9,6 +11,7 @@ export function HooksForm(): JSX.Element {
   const [hooks, setHooks] = useState<HooksConfig>({})
   const [newPath, setNewPath] = useState('')
   const [newAgent, setNewAgent] = useState('')
+  const { hasErrors } = useValidation(hooksSchema, hooks)
 
   useEffect(() => {
     setHooks(config.hooks || {})
@@ -66,7 +69,7 @@ export function HooksForm(): JSX.Element {
         </button>
       </div>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

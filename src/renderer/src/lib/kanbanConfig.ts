@@ -6,7 +6,6 @@ import {
   Palette,
   FileText,
   Send,
-  MessagesSquare,
   Bot,
   Wrench,
   Sparkles,
@@ -23,13 +22,20 @@ import {
   type LucideIcon
 } from 'lucide-react'
 import type { KanbanColumnDef, ConfigStatus, KanbanCardDef } from '../types/kanban'
+import { validateSection } from './schemas'
 
 function hasKey(obj: Record<string, unknown>, key: string): boolean {
   return obj[key] !== undefined && obj[key] !== null && Object.keys(obj[key] as object).length > 0
 }
 
+function getStatusWithValidation(config: Record<string, unknown>, key: string): ConfigStatus {
+  if (!hasKey(config, key)) return 'unconfigured'
+  const errors = validateSection(key, config[key])
+  return Object.keys(errors).length > 0 ? 'warning' : 'configured'
+}
+
 function getStatus(config: Record<string, unknown>, key: string): ConfigStatus {
-  return hasKey(config, key) ? 'configured' : 'unconfigured'
+  return getStatusWithValidation(config, key)
 }
 
 function channelCount(config: Record<string, unknown>): string {

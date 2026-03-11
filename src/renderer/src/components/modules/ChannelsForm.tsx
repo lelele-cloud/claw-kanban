@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { channelsSchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, SaveButton } from '../common/FormField'
 import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 import type { ChannelConfig } from '@/types/config'
@@ -13,6 +15,7 @@ export function ChannelsForm(): JSX.Element {
   const [channels, setChannels] = useState<Record<string, ChannelConfig>>({})
   const [expanded, setExpanded] = useState<string | null>(null)
   const [newChannel, setNewChannel] = useState('')
+  const { hasErrors } = useValidation(channelsSchema, channels)
 
   useEffect(() => {
     setChannels(config.channels || {})
@@ -76,7 +79,7 @@ export function ChannelsForm(): JSX.Element {
 
           {expanded === name && (
             <div className="border-t p-3 space-y-3">
-              <FormField label="Bot Token / Token">
+              <FormField label="Bot Token / Token" helpKey="channels.botToken">
                 <TextInput
                   value={
                     typeof channel.botToken === 'string'
@@ -93,7 +96,7 @@ export function ChannelsForm(): JSX.Element {
                 />
               </FormField>
 
-              <FormField label="DM Policy">
+              <FormField label="DM Policy" helpKey="channels.dmPolicy">
                 <SelectInput
                   value={channel.dmPolicy || 'pairing'}
                   onChange={(v) =>
@@ -108,7 +111,7 @@ export function ChannelsForm(): JSX.Element {
                 />
               </FormField>
 
-              <FormField label="Group Policy">
+              <FormField label="Group Policy" helpKey="channels.groupPolicy">
                 <SelectInput
                   value={channel.groupPolicy || 'allowlist'}
                   onChange={(v) =>
@@ -122,7 +125,7 @@ export function ChannelsForm(): JSX.Element {
                 />
               </FormField>
 
-              <FormField label="Allow From" description="Comma-separated user IDs">
+              <FormField label="Allow From" description="Comma-separated user IDs" helpKey="channels.allowFrom">
                 <TextInput
                   value={(channel.allowFrom || []).join(', ')}
                   onChange={(v) =>
@@ -163,7 +166,7 @@ export function ChannelsForm(): JSX.Element {
         </button>
       </div>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

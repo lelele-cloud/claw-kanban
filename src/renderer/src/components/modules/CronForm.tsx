@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { cronSchema } from '@/lib/schemas'
 import { FormField, TextInput, SwitchInput, SaveButton } from '../common/FormField'
 import { Plus, Trash2 } from 'lucide-react'
 import type { CronConfig } from '@/types/config'
@@ -7,6 +9,7 @@ import type { CronConfig } from '@/types/config'
 export function CronForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [cron, setCron] = useState<CronConfig>({})
+  const { hasErrors } = useValidation(cronSchema, cron)
 
   useEffect(() => {
     setCron(config.cron || {})
@@ -38,7 +41,7 @@ export function CronForm(): JSX.Element {
 
   return (
     <div className="space-y-4">
-      <FormField label="Cron Enabled">
+      <FormField label="Cron Enabled" helpKey="cron.enabled">
         <SwitchInput
           checked={cron.enabled ?? false}
           onChange={(v) => setCron({ ...cron, enabled: v })}
@@ -53,10 +56,10 @@ export function CronForm(): JSX.Element {
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
-          <FormField label="Schedule (cron expression)">
+          <FormField label="Schedule (cron expression)" helpKey="cron.jobs.schedule">
             <TextInput value={job.schedule} onChange={(v) => updateJob(idx, 'schedule', v)} placeholder="0 2 * * *" />
           </FormField>
-          <FormField label="Command">
+          <FormField label="Command" helpKey="cron.jobs.command">
             <TextInput value={job.command} onChange={(v) => updateJob(idx, 'command', v)} placeholder="cleanup" />
           </FormField>
           <FormField label="Agent ID">
@@ -73,7 +76,7 @@ export function CronForm(): JSX.Element {
         Add Job
       </button>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

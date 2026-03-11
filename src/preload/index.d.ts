@@ -62,6 +62,12 @@ interface ClawApi {
     uninstall(slug: string): Promise<{ success: boolean }>
     installed(): Promise<string[]>
   }
+  connection: {
+    test(
+      type: string,
+      config: Record<string, unknown>
+    ): Promise<{ success: boolean; message: string; latencyMs?: number }>
+  }
   system: {
     homedir(): Promise<string>
     configPath(): Promise<string>

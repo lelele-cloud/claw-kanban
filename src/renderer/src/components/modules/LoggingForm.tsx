@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { loggingSchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, SwitchInput, SaveButton } from '../common/FormField'
 import type { LoggingConfig } from '@/types/config'
 
 export function LoggingForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [logging, setLogging] = useState<LoggingConfig>({})
+  const { hasErrors } = useValidation(loggingSchema, logging)
 
   useEffect(() => {
     setLogging(config.logging || {})
@@ -17,7 +20,7 @@ export function LoggingForm(): JSX.Element {
 
   return (
     <div className="space-y-4">
-      <FormField label="Log Level">
+      <FormField label="Log Level" helpKey="logging.level">
         <SelectInput
           value={logging.level || 'info'}
           onChange={(v) => setLogging({ ...logging, level: v as LoggingConfig['level'] })}
@@ -30,7 +33,7 @@ export function LoggingForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Log File Path">
+      <FormField label="Log File Path" helpKey="logging.file">
         <TextInput
           value={logging.file || ''}
           onChange={(v) => setLogging({ ...logging, file: v })}
@@ -38,7 +41,7 @@ export function LoggingForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Redaction Enabled">
+      <FormField label="Redaction Enabled" helpKey="logging.redact.enabled">
         <SwitchInput
           checked={logging.redact?.enabled ?? true}
           onChange={(v) => setLogging({ ...logging, redact: { ...logging.redact, enabled: v } })}
@@ -60,7 +63,7 @@ export function LoggingForm(): JSX.Element {
         />
       </FormField>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

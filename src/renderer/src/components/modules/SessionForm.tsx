@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { sessionSchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, NumberInput, SwitchInput, SaveButton } from '../common/FormField'
 import type { SessionConfig } from '@/types/config'
 
 export function SessionForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [session, setSession] = useState<SessionConfig>({})
+  const { getError, hasErrors } = useValidation(sessionSchema, session)
 
   useEffect(() => {
     setSession(config.session || {})
@@ -17,7 +20,7 @@ export function SessionForm(): JSX.Element {
 
   return (
     <div className="space-y-4">
-      <FormField label="DM Scope" description="How DM conversations are scoped">
+      <FormField label="DM Scope" description="How DM conversations are scoped" helpKey="session.dmScope">
         <SelectInput
           value={session.dmScope || 'main'}
           onChange={(v) => setSession({ ...session, dmScope: v as SessionConfig['dmScope'] })}
@@ -29,7 +32,7 @@ export function SessionForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Reset Policy">
+      <FormField label="Reset Policy" helpKey="session.reset.policy">
         <SelectInput
           value={session.reset?.policy || 'daily'}
           onChange={(v) =>
@@ -43,17 +46,18 @@ export function SessionForm(): JSX.Element {
       </FormField>
 
       {session.reset?.policy === 'daily' && (
-        <FormField label="Reset Time" description="Daily reset time (HH:MM)">
+        <FormField label="Reset Time" description="Daily reset time (HH:MM)" helpKey="session.reset.time" error={getError('reset.time')}>
           <TextInput
             value={session.reset?.time || ''}
             onChange={(v) => setSession({ ...session, reset: { ...session.reset!, time: v } })}
             placeholder="04:00"
+            error={!!getError('reset.time')}
           />
         </FormField>
       )}
 
       {session.reset?.policy === 'idle' && (
-        <FormField label="Idle Hours" description="Hours of inactivity before reset">
+        <FormField label="Idle Hours" description="Hours of inactivity before reset" helpKey="session.reset.idleHours">
           <NumberInput
             value={session.reset?.idleHours}
             onChange={(v) => setSession({ ...session, reset: { ...session.reset!, idleHours: v } })}
@@ -62,7 +66,7 @@ export function SessionForm(): JSX.Element {
         </FormField>
       )}
 
-      <FormField label="Session Store Path">
+      <FormField label="Session Store Path" helpKey="session.store">
         <TextInput
           value={session.store || ''}
           onChange={(v) => setSession({ ...session, store: v })}
@@ -76,7 +80,7 @@ export function SessionForm(): JSX.Element {
         Thread Bindings
       </h3>
 
-      <FormField label="Enabled">
+      <FormField label="Enabled" helpKey="session.threadBindings.enabled">
         <SwitchInput
           checked={session.threadBindings?.enabled ?? true}
           onChange={(v) =>
@@ -122,7 +126,7 @@ export function SessionForm(): JSX.Element {
       </h3>
 
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Retention (days)">
+        <FormField label="Retention (days)" helpKey="session.maintenance.retentionDays">
           <NumberInput
             value={session.maintenance?.retentionDays}
             onChange={(v) =>
@@ -134,7 +138,7 @@ export function SessionForm(): JSX.Element {
             placeholder="30"
           />
         </FormField>
-        <FormField label="Disk Budget (MB)">
+        <FormField label="Disk Budget (MB)" helpKey="session.maintenance.diskBudgetMb">
           <NumberInput
             value={session.maintenance?.diskBudgetMb}
             onChange={(v) =>
@@ -148,7 +152,7 @@ export function SessionForm(): JSX.Element {
         </FormField>
       </div>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

@@ -56,6 +56,15 @@ const api = {
       ipcRenderer.invoke('clawhub:installed')
   },
 
+  // Connection testing
+  connection: {
+    test: (
+      type: string,
+      config: Record<string, unknown>
+    ): Promise<{ success: boolean; message: string; latencyMs?: number }> =>
+      ipcRenderer.invoke('connection:test', type, config)
+  },
+
   // Event listeners
   onConfigChanged: (callback: () => void): (() => void) => {
     const handler = (): void => callback()

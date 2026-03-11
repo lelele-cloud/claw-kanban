@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, AlertCircle } from 'lucide-react'
+import { CheckCircle2, Circle, AlertCircle, AlertTriangle } from 'lucide-react'
 import type { ConfigStatus } from '@/types/kanban'
 import { cn } from '@/lib/utils'
 
@@ -21,6 +21,11 @@ const statusConfig: Record<ConfigStatus, { icon: typeof CheckCircle2; label: str
     icon: AlertCircle,
     label: 'Error',
     className: 'text-destructive'
+  },
+  warning: {
+    icon: AlertTriangle,
+    label: '需要检查',
+    className: 'text-yellow-500'
   }
 }
 

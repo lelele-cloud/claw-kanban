@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { gatewaySchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, NumberInput, SaveButton } from '../common/FormField'
 import type { GatewayConfig } from '@/types/config'
 
 export function GatewayForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [gw, setGw] = useState<GatewayConfig>({})
+  const { getError, hasErrors } = useValidation(gatewaySchema, gw)
 
   useEffect(() => {
     setGw(config.gateway || {})
@@ -17,17 +20,18 @@ export function GatewayForm(): JSX.Element {
 
   return (
     <div className="space-y-4">
-      <FormField label="Port" description="Gateway listen port (default: 18789)">
+      <FormField label="Port" description="Gateway listen port (default: 18789)" helpKey="gateway.port" error={getError('port')}>
         <NumberInput
           value={gw.port}
           onChange={(v) => setGw({ ...gw, port: v })}
           placeholder="18789"
           min={1}
           max={65535}
+          error={!!getError('port')}
         />
       </FormField>
 
-      <FormField label="Bind" description="Network binding mode">
+      <FormField label="Bind" description="Network binding mode" helpKey="gateway.bind">
         <SelectInput
           value={gw.bind || 'loopback'}
           onChange={(v) => setGw({ ...gw, bind: v })}
@@ -40,7 +44,7 @@ export function GatewayForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Authentication Type">
+      <FormField label="Authentication Type" helpKey="gateway.auth.type">
         <SelectInput
           value={gw.auth?.type || 'token'}
           onChange={(v) =>
@@ -56,17 +60,18 @@ export function GatewayForm(): JSX.Element {
       </FormField>
 
       {gw.auth?.type === 'token' && (
-        <FormField label="Auth Token">
+        <FormField label="Auth Token" helpKey="gateway.auth.token" error={getError('auth.token')}>
           <TextInput
             value={(gw.auth?.token as string) || ''}
             onChange={(v) => setGw({ ...gw, auth: { ...gw.auth!, token: v } })}
             placeholder="sk-..."
             type="password"
+            error={!!getError('auth.token')}
           />
         </FormField>
       )}
 
-      <FormField label="Hot Reload Mode" description="How config changes are applied">
+      <FormField label="Hot Reload Mode" description="How config changes are applied" helpKey="gateway.reload.mode">
         <SelectInput
           value={gw.reload?.mode || 'hybrid'}
           onChange={(v) =>
@@ -95,7 +100,7 @@ export function GatewayForm(): JSX.Element {
         </FormField>
       )}
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

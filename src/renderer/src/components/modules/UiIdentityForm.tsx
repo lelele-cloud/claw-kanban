@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { uiSchema, identitySchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, SaveButton } from '../common/FormField'
 
 export function UiIdentityForm(): JSX.Element {
@@ -8,6 +10,8 @@ export function UiIdentityForm(): JSX.Element {
   const [assistantName, setAssistantName] = useState('')
   const [user, setUser] = useState('')
   const [org, setOrg] = useState('')
+  const { hasErrors: hasUiErrors } = useValidation(uiSchema, { colorScheme: colorScheme as 'light' | 'dark' | 'auto', assistantName: assistantName || undefined })
+  const { hasErrors: hasIdentityErrors } = useValidation(identitySchema, { user: user || undefined, org: org || undefined })
 
   useEffect(() => {
     setColorScheme(config.ui?.colorScheme || 'auto')
@@ -25,7 +29,7 @@ export function UiIdentityForm(): JSX.Element {
     <div className="space-y-4">
       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">UI Settings</h3>
 
-      <FormField label="Color Scheme">
+      <FormField label="Color Scheme" helpKey="ui.colorScheme">
         <SelectInput
           value={colorScheme}
           onChange={setColorScheme}
@@ -37,7 +41,7 @@ export function UiIdentityForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Assistant Name">
+      <FormField label="Assistant Name" helpKey="ui.assistantName">
         <TextInput value={assistantName} onChange={setAssistantName} placeholder="Claude" />
       </FormField>
 
@@ -45,15 +49,15 @@ export function UiIdentityForm(): JSX.Element {
 
       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Identity</h3>
 
-      <FormField label="User">
+      <FormField label="User" helpKey="identity.user">
         <TextInput value={user} onChange={setUser} placeholder="Your Name" />
       </FormField>
 
-      <FormField label="Organization">
+      <FormField label="Organization" helpKey="identity.org">
         <TextInput value={org} onChange={setOrg} placeholder="Your Org" />
       </FormField>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasUiErrors || hasIdentityErrors} />
     </div>
   )
 }

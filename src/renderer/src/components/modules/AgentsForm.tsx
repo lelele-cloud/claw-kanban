@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
-import { FormField, TextInput, NumberInput, SelectInput, SaveButton } from '../common/FormField'
+import { useValidation } from '@/hooks/useValidation'
+import { agentsSchema } from '@/lib/schemas'
+import { FormField, TextInput, NumberInput, SaveButton } from '../common/FormField'
 import { Plus, Trash2 } from 'lucide-react'
 import type { AgentsConfig, AgentEntry } from '@/types/config'
 
 export function AgentsForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [agents, setAgents] = useState<AgentsConfig>({})
+  const { getError, hasErrors } = useValidation(agentsSchema, agents)
 
   useEffect(() => {
     setAgents(config.agents || {})
@@ -49,7 +52,7 @@ export function AgentsForm(): JSX.Element {
         Default Settings
       </h3>
 
-      <FormField label="Workspace" description="Default agent workspace directory">
+      <FormField label="Workspace" description="Default agent workspace directory" helpKey="agents.defaults.workspace">
         <TextInput
           value={agents.defaults?.workspace || ''}
           onChange={(v) => updateDefaults('workspace', v)}
@@ -57,7 +60,7 @@ export function AgentsForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Model" description="Default AI model">
+      <FormField label="Model" description="Default AI model" helpKey="agents.defaults.model">
         <TextInput
           value={agents.defaults?.model || ''}
           onChange={(v) => updateDefaults('model', v)}
@@ -65,15 +68,16 @@ export function AgentsForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Timeout">
+      <FormField label="Timeout" helpKey="agents.defaults.timeout" error={getError('defaults.timeout')}>
         <TextInput
           value={agents.defaults?.timeout || ''}
           onChange={(v) => updateDefaults('timeout', v)}
           placeholder="30m"
+          error={!!getError('defaults.timeout')}
         />
       </FormField>
 
-      <FormField label="Context Window">
+      <FormField label="Context Window" helpKey="agents.defaults.contextWindow">
         <NumberInput
           value={agents.defaults?.contextWindow}
           onChange={(v) => updateDefaults('contextWindow', v)}
@@ -82,7 +86,7 @@ export function AgentsForm(): JSX.Element {
       </FormField>
 
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Primary Concurrency">
+        <FormField label="Primary Concurrency" helpKey="agents.defaults.concurrencyLimits.primary">
           <NumberInput
             value={agents.defaults?.concurrencyLimits?.primary}
             onChange={(v) =>
@@ -94,7 +98,7 @@ export function AgentsForm(): JSX.Element {
             placeholder="4"
           />
         </FormField>
-        <FormField label="Subagent Concurrency">
+        <FormField label="Subagent Concurrency" helpKey="agents.defaults.concurrencyLimits.subagents">
           <NumberInput
             value={agents.defaults?.concurrencyLimits?.subagents}
             onChange={(v) =>
@@ -126,7 +130,7 @@ export function AgentsForm(): JSX.Element {
       {(agents.list || []).map((agent, idx) => (
         <div key={idx} className="rounded-lg border p-3 space-y-3">
           <div className="flex items-center justify-between">
-            <FormField label="Agent ID" className="flex-1">
+            <FormField label="Agent ID" className="flex-1" helpKey="agents.list.id">
               <TextInput
                 value={agent.id}
                 onChange={(v) => updateAgent(idx, { id: v })}
@@ -159,7 +163,7 @@ export function AgentsForm(): JSX.Element {
         </div>
       ))}
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

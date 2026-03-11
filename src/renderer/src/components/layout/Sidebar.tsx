@@ -4,14 +4,14 @@ import {
   FolderOpen,
   RefreshCw,
   ExternalLink,
-  Settings
+  Sparkles
 } from 'lucide-react'
 import { useUiStore } from '@/stores/uiStore'
 import { useConfigStore } from '@/stores/configStore'
 import { cn } from '@/lib/utils'
 
 export function Sidebar(): JSX.Element {
-  const { viewMode, setViewMode } = useUiStore()
+  const { viewMode, setViewMode, showWizard } = useUiStore()
   const { loadConfig, loading } = useConfigStore()
 
   return (
@@ -68,10 +68,11 @@ export function Sidebar(): JSX.Element {
       </button>
 
       <button
+        onClick={() => showWizard()}
         className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        title="Settings"
+        title="设置向导"
       >
-        <Settings className="h-4 w-4" />
+        <Sparkles className="h-4 w-4" />
       </button>
     </div>
   )

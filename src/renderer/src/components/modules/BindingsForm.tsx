@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { bindingsSchema } from '@/lib/schemas'
 import { FormField, TextInput, SaveButton } from '../common/FormField'
 import { Plus, Trash2 } from 'lucide-react'
 import type { BindingsConfig } from '@/types/config'
@@ -7,6 +9,7 @@ import type { BindingsConfig } from '@/types/config'
 export function BindingsForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [bindings, setBindings] = useState<BindingsConfig>({})
+  const { hasErrors } = useValidation(bindingsSchema, bindings)
 
   useEffect(() => {
     setBindings(config.bindings || {})
@@ -64,7 +67,7 @@ export function BindingsForm(): JSX.Element {
         Add Route
       </button>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

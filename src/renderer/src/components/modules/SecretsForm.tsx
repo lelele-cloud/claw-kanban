@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { secretsSchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, SaveButton } from '../common/FormField'
 import { Plus, Trash2 } from 'lucide-react'
 
@@ -10,6 +12,7 @@ export function SecretsForm(): JSX.Element {
   const [newSecretName, setNewSecretName] = useState('')
   const [newEnvKey, setNewEnvKey] = useState('')
   const [newEnvVal, setNewEnvVal] = useState('')
+  const { hasErrors } = useValidation(secretsSchema, secrets)
 
   useEffect(() => {
     setSecrets((config.secrets as typeof secrets) || {})
@@ -56,7 +59,7 @@ export function SecretsForm(): JSX.Element {
             <span className="text-xs font-medium">{name}</span>
             <button onClick={() => removeSecret(name)} className="text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
           </div>
-          <FormField label="Type">
+          <FormField label="Type" helpKey="secrets.type">
             <SelectInput
               value={secret.type}
               onChange={(v) => setSecrets({ ...secrets, [name]: { ...secret, type: v } })}
@@ -118,7 +121,7 @@ export function SecretsForm(): JSX.Element {
         </button>
       </div>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

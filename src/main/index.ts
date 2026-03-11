@@ -5,6 +5,7 @@ import { registerConfigHandlers } from './ipc/configHandlers'
 import { registerWorkspaceHandlers } from './ipc/workspaceHandlers'
 import { registerSystemHandlers } from './ipc/systemHandlers'
 import { registerClawHubHandlers } from './ipc/clawhubHandlers'
+import { registerConnectionHandlers } from './ipc/connectionHandlers'
 import { startWatching, stopWatching } from './services/watcherService'
 
 function createWindow(): void {
@@ -51,6 +52,7 @@ app.whenReady().then(() => {
   registerWorkspaceHandlers()
   registerSystemHandlers()
   registerClawHubHandlers()
+  registerConnectionHandlers()
 
   createWindow()
 

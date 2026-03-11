@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { browserSchema } from '@/lib/schemas'
 import { FormField, TextInput, NumberInput, SwitchInput, SaveButton } from '../common/FormField'
 import { Plus, Trash2 } from 'lucide-react'
 import type { BrowserConfig } from '@/types/config'
@@ -8,6 +10,7 @@ export function BrowserForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [browser, setBrowser] = useState<BrowserConfig>({})
   const [newProfileName, setNewProfileName] = useState('')
+  const { hasErrors } = useValidation(browserSchema, browser)
 
   useEffect(() => {
     setBrowser(config.browser || {})
@@ -34,7 +37,7 @@ export function BrowserForm(): JSX.Element {
 
   return (
     <div className="space-y-4">
-      <FormField label="Browser Automation Enabled">
+      <FormField label="Browser Automation Enabled" helpKey="browser.enabled">
         <SwitchInput
           checked={browser.enabled ?? false}
           onChange={(v) => setBrowser({ ...browser, enabled: v })}
@@ -78,7 +81,7 @@ export function BrowserForm(): JSX.Element {
             </button>
           </div>
 
-          <FormField label="Block Private Networks">
+          <FormField label="Block Private Networks" helpKey="browser.ssrfPolicy.blockPrivateNetworks">
             <SwitchInput
               checked={browser.ssrfPolicy?.blockPrivateNetworks ?? true}
               onChange={(v) => setBrowser({ ...browser, ssrfPolicy: { ...browser.ssrfPolicy, blockPrivateNetworks: v } })}
@@ -87,7 +90,7 @@ export function BrowserForm(): JSX.Element {
         </>
       )}
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

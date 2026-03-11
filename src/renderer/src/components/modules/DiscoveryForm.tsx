@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { discoverySchema } from '@/lib/schemas'
 import { FormField, TextInput, SwitchInput, SaveButton } from '../common/FormField'
 import type { DiscoveryConfig } from '@/types/config'
 
 export function DiscoveryForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [discovery, setDiscovery] = useState<DiscoveryConfig>({})
+  const { hasErrors } = useValidation(discoverySchema, discovery)
 
   useEffect(() => {
     setDiscovery(config.discovery || {})
@@ -19,14 +22,14 @@ export function DiscoveryForm(): JSX.Element {
     <div className="space-y-4">
       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">mDNS</h3>
 
-      <FormField label="mDNS Enabled">
+      <FormField label="mDNS Enabled" helpKey="discovery.mdns.enabled">
         <SwitchInput
           checked={discovery.mdns?.enabled ?? false}
           onChange={(v) => setDiscovery({ ...discovery, mdns: { ...discovery.mdns, enabled: v } })}
         />
       </FormField>
 
-      <FormField label="Service Name">
+      <FormField label="Service Name" helpKey="discovery.mdns.serviceName">
         <TextInput
           value={discovery.mdns?.serviceName || ''}
           onChange={(v) => setDiscovery({ ...discovery, mdns: { ...discovery.mdns, serviceName: v } })}
@@ -45,7 +48,7 @@ export function DiscoveryForm(): JSX.Element {
         />
       </FormField>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

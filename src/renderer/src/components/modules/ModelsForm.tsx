@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { modelsSchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, SaveButton } from '../common/FormField'
 import { Plus, Trash2 } from 'lucide-react'
 import type { ProviderConfig } from '@/types/config'
@@ -8,6 +10,7 @@ export function ModelsForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [providers, setProviders] = useState<Record<string, ProviderConfig>>({})
   const [newName, setNewName] = useState('')
+  const { getError, hasErrors } = useValidation(modelsSchema, { providers })
 
   useEffect(() => {
     setProviders(config.models?.providers || {})
@@ -57,15 +60,16 @@ export function ModelsForm(): JSX.Element {
             </button>
           </div>
 
-          <FormField label="Base URL">
+          <FormField label="Base URL" helpKey="models.providers.baseUrl" error={getError(`providers.${name}.baseUrl`)}>
             <TextInput
               value={provider.baseUrl}
               onChange={(v) => updateProvider(name, { baseUrl: v })}
               placeholder="https://api.openai.com/v1"
+              error={!!getError(`providers.${name}.baseUrl`)}
             />
           </FormField>
 
-          <FormField label="API Type">
+          <FormField label="API Type" helpKey="models.providers.apiType">
             <SelectInput
               value={provider.apiType}
               onChange={(v) => updateProvider(name, { apiType: v })}
@@ -80,7 +84,7 @@ export function ModelsForm(): JSX.Element {
             />
           </FormField>
 
-          <FormField label="API Key">
+          <FormField label="API Key" helpKey="models.providers.apiKey">
             <TextInput
               value={typeof provider.apiKey === 'string' ? provider.apiKey : ''}
               onChange={(v) => updateProvider(name, { apiKey: v })}
@@ -106,7 +110,7 @@ export function ModelsForm(): JSX.Element {
         </button>
       </div>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useConfigStore } from '@/stores/configStore'
+import { useValidation } from '@/hooks/useValidation'
+import { toolsSchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, SwitchInput, NumberInput, SaveButton } from '../common/FormField'
 import type { ToolsConfig } from '@/types/config'
 
 export function ToolsForm(): JSX.Element {
   const { config, patchConfig } = useConfigStore()
   const [tools, setTools] = useState<ToolsConfig>({})
+  const { hasErrors } = useValidation(toolsSchema, tools)
 
   useEffect(() => {
     setTools(config.tools || {})
@@ -17,7 +20,7 @@ export function ToolsForm(): JSX.Element {
 
   return (
     <div className="space-y-4">
-      <FormField label="Tool Profile" description="Pre-configured tool set">
+      <FormField label="Tool Profile" description="Pre-configured tool set" helpKey="tools.profile">
         <SelectInput
           value={tools.profile || 'coding'}
           onChange={(v) => setTools({ ...tools, profile: v as ToolsConfig['profile'] })}
@@ -30,7 +33,7 @@ export function ToolsForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Allow" description="Comma-separated tool patterns (e.g. git.*, web.*)">
+      <FormField label="Allow" description="Comma-separated tool patterns (e.g. git.*, web.*)" helpKey="tools.allow">
         <TextInput
           value={(tools.allow || []).join(', ')}
           onChange={(v) =>
@@ -40,7 +43,7 @@ export function ToolsForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Deny" description="Blocked tool patterns">
+      <FormField label="Deny" description="Blocked tool patterns" helpKey="tools.deny">
         <TextInput
           value={(tools.deny || []).join(', ')}
           onChange={(v) =>
@@ -63,7 +66,7 @@ export function ToolsForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Exec Timeout">
+      <FormField label="Exec Timeout" helpKey="tools.exec.timeout">
         <TextInput
           value={tools.exec?.timeout || ''}
           onChange={(v) => setTools({ ...tools, exec: { ...tools.exec, timeout: v } })}
@@ -118,7 +121,7 @@ export function ToolsForm(): JSX.Element {
         />
       </FormField>
 
-      <FormField label="Max Fetch Bytes">
+      <FormField label="Max Fetch Bytes" helpKey="tools.web.fetch.maxBytes">
         <NumberInput
           value={tools.web?.fetch?.maxBytes}
           onChange={(v) =>
@@ -153,7 +156,7 @@ export function ToolsForm(): JSX.Element {
         />
       </FormField>
 
-      <SaveButton onClick={save} />
+      <SaveButton onClick={save} disabled={hasErrors} />
     </div>
   )
 }

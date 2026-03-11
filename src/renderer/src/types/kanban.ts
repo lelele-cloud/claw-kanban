@@ -1,6 +1,6 @@
 import { type LucideIcon } from 'lucide-react'
 
-export type ConfigStatus = 'configured' | 'unconfigured' | 'error'
+export type ConfigStatus = 'configured' | 'unconfigured' | 'error' | 'warning'
 
 export interface KanbanCardDef {
   id: string
