@@ -3,6 +3,7 @@ import { useConfigStore } from '@/stores/configStore'
 import { useValidation } from '@/hooks/useValidation'
 import { channelsSchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, SaveButton } from '../common/FormField'
+import { TestConnectionButton } from '../common/TestConnectionButton'
 import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 import type { ChannelConfig } from '@/types/config'
 
@@ -139,6 +140,15 @@ export function ChannelsForm(): JSX.Element {
                   placeholder="user1, user2"
                 />
               </FormField>
+
+              <TestConnectionButton
+                type={name}
+                config={
+                  name === 'telegram'
+                    ? { botToken: channel.botToken }
+                    : { token: channel.token }
+                }
+              />
             </div>
           )}
         </div>

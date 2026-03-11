@@ -3,6 +3,7 @@ import { useConfigStore } from '@/stores/configStore'
 import { useValidation } from '@/hooks/useValidation'
 import { modelsSchema } from '@/lib/schemas'
 import { FormField, TextInput, SelectInput, SaveButton } from '../common/FormField'
+import { TestConnectionButton } from '../common/TestConnectionButton'
 import { Plus, Trash2 } from 'lucide-react'
 import type { ProviderConfig } from '@/types/config'
 
@@ -92,6 +93,14 @@ export function ModelsForm(): JSX.Element {
               type="password"
             />
           </FormField>
+
+          <TestConnectionButton
+            type={provider.apiType}
+            config={{
+              apiKey: typeof provider.apiKey === 'string' ? provider.apiKey : '',
+              baseUrl: provider.baseUrl
+            }}
+          />
         </div>
       ))}
 
