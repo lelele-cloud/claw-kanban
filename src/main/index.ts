@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { registerConfigHandlers } from './ipc/configHandlers'
 import { registerWorkspaceHandlers } from './ipc/workspaceHandlers'
 import { registerSystemHandlers } from './ipc/systemHandlers'
+import { registerClawHubHandlers } from './ipc/clawhubHandlers'
 import { startWatching, stopWatching } from './services/watcherService'
 
 function createWindow(): void {
@@ -49,6 +50,7 @@ app.whenReady().then(() => {
   registerConfigHandlers()
   registerWorkspaceHandlers()
   registerSystemHandlers()
+  registerClawHubHandlers()
 
   createWindow()
 

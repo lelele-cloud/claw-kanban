@@ -38,6 +38,24 @@ const api = {
       ipcRenderer.invoke('system:openExternal', url)
   },
 
+  // ClawHub marketplace operations
+  clawhub: {
+    search: (query: string, limit?: number): Promise<unknown[]> =>
+      ipcRenderer.invoke('clawhub:search', query, limit),
+    list: (sort?: string, limit?: number, cursor?: string): Promise<{ skills: unknown[]; nextCursor?: string }> =>
+      ipcRenderer.invoke('clawhub:list', sort, limit, cursor),
+    detail: (slug: string): Promise<unknown> =>
+      ipcRenderer.invoke('clawhub:detail', slug),
+    file: (slug: string, path?: string, version?: string): Promise<string> =>
+      ipcRenderer.invoke('clawhub:file', slug, path, version),
+    install: (slug: string, version?: string): Promise<{ path: string }> =>
+      ipcRenderer.invoke('clawhub:install', slug, version),
+    uninstall: (slug: string): Promise<{ success: boolean }> =>
+      ipcRenderer.invoke('clawhub:uninstall', slug),
+    installed: (): Promise<string[]> =>
+      ipcRenderer.invoke('clawhub:installed')
+  },
+
   // Event listeners
   onConfigChanged: (callback: () => void): (() => void) => {
     const handler = (): void => callback()

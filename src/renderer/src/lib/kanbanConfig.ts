@@ -148,7 +148,7 @@ export const kanbanColumns: KanbanColumnDef[] = [
     color: 'bg-purple-500',
     cards: [
       makeCard('agents', 'Agents', 'Agent defaults and custom agents', Bot, 'agents', agentCount),
-      makeCard('skills', 'Skills', 'Agent skill definitions', Sparkles, 'skills', (c) => simpleInfo(c, 'skills', 'No skills configured')),
+      makeCard('skills', 'Skills & ClawHub', 'Browse, install & manage skills', Sparkles, 'skills', (c) => simpleInfo(c, 'skills', 'Browse ClawHub marketplace')),
       makeCard('soul-md', 'SOUL.md', 'Agent personality and identity', Heart, 'soul-md', () => 'Click to edit', () => 'configured' as ConfigStatus),
       makeCard('tools', 'Tools', 'Tool access and permissions', Wrench, 'tools', toolsInfo),
       makeCard('memory', 'Memory Search', 'Vector search and recall', Brain, 'agents', (c) => {

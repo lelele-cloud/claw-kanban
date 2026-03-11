@@ -4,6 +4,40 @@ interface SkillInfo {
   content: string
 }
 
+interface ClawHubSkill {
+  slug: string
+  name: string
+  description: string
+  owner: { handle: string }
+  downloads?: number
+  installs?: number
+  installsAllTime?: number
+  stars?: number
+  rating?: number
+  version?: string
+  updatedAt?: string
+  createdAt?: string
+  highlighted?: boolean
+  metadata?: {
+    openclaw?: {
+      emoji?: string
+      homepage?: string
+      os?: string[]
+      primaryEnv?: string
+      requires?: {
+        env?: string[]
+        bins?: string[]
+        anyBins?: string[]
+      }
+    }
+  }
+}
+
+interface ClawHubListResult {
+  skills: ClawHubSkill[]
+  nextCursor?: string
+}
+
 interface ClawApi {
   config: {
     read(): Promise<Record<string, unknown>>
@@ -18,6 +52,15 @@ interface ClawApi {
     readSkill(name: string): Promise<string>
     writeSkill(name: string, content: string): Promise<{ success: boolean }>
     listFiles(): Promise<string[]>
+  }
+  clawhub: {
+    search(query: string, limit?: number): Promise<ClawHubSkill[]>
+    list(sort?: string, limit?: number, cursor?: string): Promise<ClawHubListResult>
+    detail(slug: string): Promise<ClawHubSkill>
+    file(slug: string, path?: string, version?: string): Promise<string>
+    install(slug: string, version?: string): Promise<{ path: string }>
+    uninstall(slug: string): Promise<{ success: boolean }>
+    installed(): Promise<string[]>
   }
   system: {
     homedir(): Promise<string>
